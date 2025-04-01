@@ -93,7 +93,7 @@ with gr.Blocks() as demo:
     with gr.Row():
         # Left Column: Search and action buttons.
         with gr.Column(scale=1):
-            gr.Markdown("## Re:Search - AI Powered Research Assistant")
+            gr.Markdown("## DelveDeep - AI Powered Research Assistant")
             query_input = gr.Textbox(label="Enter your research query", placeholder="e.g., Find papers on NLP")
             upload_file = gr.File(label="Upload Document - .pdf, .docx, .txt (optional)")
             search_button = gr.Button("Search")
