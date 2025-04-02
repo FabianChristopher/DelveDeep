@@ -17,12 +17,18 @@
     OPENAI_API_KEY_2 = "<YOUR_OPENAI_KEY_2>" 
     ```
 
-- Open terminal in you root directory and run
+- Open a terminal in your root directory and run the following to boot up your Backend.
+
+    ```
+    python app.py
+    ```
+- Open another terminal in your root directory and run the following to boot up your Frontend.
 
     ```
     python gradio_frontend.py
     ```
-- Either open the Local link or the Hosted link to try the Application.
+      
+- Either open the Local link or the Hosted link in the second terminal to demo the Application.
 
 ## Making Contributions
 - Contributions are welcome, but before you do, please follow these steps.
@@ -39,6 +45,6 @@
     .env
     ```
 - Now you can push your changes to Github!
-
+- Make sure to push changes to your named branch and not to main.
 
 ### 💖 Developed with love by Fabian Christopher
