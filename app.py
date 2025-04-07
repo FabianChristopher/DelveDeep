@@ -1,6 +1,8 @@
 from flask import Flask, request, jsonify
+from flask import render_template
 from flask_cors import CORS
 from api.paper_search import search_papers
+
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -22,6 +24,10 @@ def handle_intents(user_message):
                 f"📊 Citations: {paper['citations']}\n\n"
             )
     return {"response": response_text, "papers": papers}
+
+@app.route("/")
+def homepage():
+    return render_template("home.html")
 
 @app.route("/chatbot", methods=["POST"])
 def chatbot():
