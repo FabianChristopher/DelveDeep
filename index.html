@@ -9,35 +9,65 @@
   <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
 </head>
 <body>
-  <header>
-    <div class="logo">ScholarWiz</div>
-    <a href="http://localhost:7860" class="launch-btn">Launch App 🚀</a>
-  </header>
 
+  <div id="tsparticles"></div>
+
+  <header>
+    <div class="logo-title">
+      <img src="/static/images/logo.png" alt="ScholarWiz Logo" class="logo-icon">
+      <span class="logo-text">ScholarWiz</span>
+    </div>
+    <a href="http://127.0.0.1:7860/" class="launch-btn">Launch App 🚀</a>
+  </header>
   <section class="hero" data-aos="fade-up">
     <h1>Your AI Research Assistant</h1>
     <p>Explore, Compare, and Summarize academic research with ease.</p>
-    <a href="#features" class="scroll-btn">Learn More ↓</a>
   </section>
 
-  <section class="features" id="features">
-    <h2 data-aos="fade-up">Features</h2>
-    <div class="feature-list">
-      <div class="feature" data-aos="zoom-in">
-        <h3>🔍 Smart Paper Search</h3>
-        <p>Get AI-curated academic papers based on your topic or query.</p>
+  <section class="feature-block" data-aos="fade-right" data-aos-delay="200">
+    <div class="feature-content">
+      <div class="text">
+        <h2>🔍 Smart Paper Search</h2>
+        <p>Use AI to find top-quality research papers based on your topic or query. ScholarWiz provides curated results based on relevance and academic strength.</p>
       </div>
-      <div class="feature" data-aos="zoom-in" data-aos-delay="100">
-        <h3>🧠 Summarization</h3>
-        <p>Summarize key findings and methods from lengthy papers instantly.</p>
+      <div class="media">
+        <img src="/static/images/smart_search.png" alt="Smart Paper Search Illustration">
       </div>
-      <div class="feature" data-aos="zoom-in" data-aos-delay="200">
-        <h3>📄 Literature Reviews</h3>
-        <p>Generate ready-to-use literature reviews with citations.</p>
+    </div>
+  </section>
+
+  <section class="feature-block alt" data-aos="fade-left" data-aos-delay="400">
+    <div class="feature-content">
+      <div class="media">
+        <img src="/static/images/summary.png" alt="Summarization Illustration">
       </div>
-      <div class="feature" data-aos="zoom-in" data-aos-delay="300">
-        <h3>📚 Compare Papers</h3>
-        <p>Evaluate multiple research papers side by side with clarity.</p>
+      <div class="text">
+        <h2>🧠 Summarization</h2>
+        <p>Instantly summarize lengthy academic papers into key insights with the power of AI. ScholarWiz helps save time and retain clarity.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="feature-block" data-aos="fade-right" data-aos-delay="400">
+    <div class="feature-content">
+      <div class="text">
+        <h2>📄 Literature Reviews</h2>
+        <p>Generate complete literature reviews, backed by citations. Organize and synthesize related work with precision and ease.</p>
+      </div>
+      <div class="media">
+        <img src="/static/images/literature_review.png" alt="Literature Review Illustration">
+      </div>
+    </div>
+  </section>
+
+  <section class="feature-block alt" data-aos="fade-left" data-aos-delay="400">
+    <div class="feature-content">
+      <div class="media">
+        <img src="/static/images/compare_paper.png" alt="Compare Papers Illustration">
+      </div>
+      <div class="text">
+        <h2>📚 Compare Papers</h2>
+        <p>Easily compare multiple papers by methods, citations, or findings. ScholarWiz makes side-by-side analysis intuitive and efficient.</p>
       </div>
     </div>
   </section>
@@ -47,6 +77,38 @@
   </footer>
 
   <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
-  <script>AOS.init();</script>
+<script>
+  AOS.init({
+    duration: 1000,   // animation duration in ms
+    once: true,       // animate only once
+  });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/tsparticles@2/tsparticles.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tsparticles@2/tsparticles.presets.links.min.js"></script>&#8203;
+<script>
+  tsParticles.load("tsparticles", {
+    preset: "links",
+    background: {
+      color: {
+        value: "transparent"
+      }
+    },
+    particles: {
+      color: { value: "#ffffff" },
+      links: {
+        color: "#ffffff",
+        distance: 120,
+        enable: true,
+        opacity: 0.3,
+        width: 1
+      },
+      move: { enable: true, speed: 1 },
+      number: { value: 150 },
+      opacity: { value: 0.5 },
+      shape: { type: "circle" },
+      size: { value: { min: 1, max: 3 } }
+    }
+  });
+</script>
 </body>
 </html>
