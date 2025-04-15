@@ -15,6 +15,17 @@ from api.keyword_extraction import extract_main_keyword
 paper_ids = []             # List of paper IDs.
 paper_title_map = {}       # Mapping: paper_id -> paper title.
 
+result_titles_list = []       # List of paper titles to show in checkboxes
+paper_id_by_title = {}        # Map from title → paper ID (for reverse lookup)
+
+paper_citations = {}  # paper_id → citations HTML
+paper_bibtex = {}     # paper_id → bibtex HTML
+
+def validate_selection(selected_titles, min_required):
+    if not selected_titles or len(selected_titles) < min_required:
+        return False, f"❌ Please select at least {min_required} paper(s)."
+    return True, ""
+
 def extract_text_from_file(file_path):
     """
     Extracts text from a given file (.txt, .docx, .pdf).
@@ -46,9 +57,11 @@ def search_and_update(query, file):
     Extracts the main topic keyword from the query (or uploaded file content),
     then passes the extracted keyword to the paper search API.
     """
-    global paper_ids, paper_title_map
+    global paper_ids, paper_title_map, result_titles_list, paper_id_by_title
     paper_ids = []
     paper_title_map = {}
+    result_titles_list = []
+    paper_id_by_title = {}
 
     #Adding loading animation
     loading_spinner_html = "<div id='loading-spinner'></div>"
@@ -56,7 +69,8 @@ def search_and_update(query, file):
     #Show loading animation
     yield (
         gr.update(value=loading_spinner_html, visible=True),
-        gr.update(visible=False)
+        gr.update(visible=False),
+        gr.update(choices=[], value=[], visible=False)
     )
 
     # If a file is uploaded, extract its content and append it to the query
@@ -64,8 +78,9 @@ def search_and_update(query, file):
         file_text = extract_text_from_file(file.name)
         if "Error" in file_text:
             yield (
-                gr.update(visible=False), # Disable loading animation
-                gr.update(value= file_text, visible=True) # Error output
+                gr.update(visible=False),
+                gr.update(value=file_text, visible=True),
+                gr.update(choices=[], value=[], visible=False)
             )
             return
         
@@ -90,13 +105,22 @@ def search_and_update(query, file):
             for paper in papers:
                 if isinstance(paper, dict):
                     pid = str(paper.get("id", "N/A"))
+
+                    # preload citations and bibtex
+                    paper_citations[pid] = get_citations([pid], paper_title_map)
+                    paper_bibtex[pid] = get_bibtex([pid], paper_title_map)
+
                     title = paper.get("title", "Unknown Title")
                     paper_ids.append(pid)
                     paper_title_map[pid] = title
 
+                    result_titles_list.append(title)
+                    paper_id_by_title[title] = pid
+
                     yield (
-                        gr.update(visible=False), #Disable loading animation
-                        gr.update(value=markdown_text, visible=True) # results_md
+                        gr.update(visible=False),
+                        gr.update(value=markdown_text, visible=True),
+                        gr.update(choices=result_titles_list, value=result_titles_list[:1], visible=True)
                     )
                 else:
                     yield (
@@ -106,7 +130,8 @@ def search_and_update(query, file):
     except Exception as e:
         yield (
             gr.update(visible=False),
-            gr.update(value=f"Request failed: {str(e)}", visible=True)
+            gr.update(value=f"Request failed: {str(e)}", visible=True),
+            gr.update(choices=[], value=[], visible=False)
         )
 
 # For now, we leave other action functions as placeholders.
@@ -333,6 +358,8 @@ with gr.Blocks() as demo:
             gr.HTML("<div id='results-anchor'></div>")
             loading_html = gr.HTML(visible=False)
             results_md = gr.Markdown(visible=False)
+
+            selection = gr.CheckboxGroup(label="Select Papers", choices=[], visible=True)
             
             with gr.Row(elem_id="action-btn-row"):
                 btn_citations = gr.Button("Get Citations", elem_classes="action-btn")
@@ -342,8 +369,8 @@ with gr.Blocks() as demo:
                 gr.HTML("<div id='action-output-anchor'></div>")
 
                 action_loading = gr.HTML(visible=False)
-                details_html = gr.HTML(visible=False)                
-                
+                details_html = gr.HTML(visible=False)    
+
         # Right Column: Detailed results pane.
         #with gr.Column(scale=1):
         #    details_html = gr.HTML(
@@ -355,27 +382,60 @@ with gr.Blocks() as demo:
     search_button.click(
         search_and_update,
         inputs=[query_input, upload_file],
-        outputs=[loading_html, results_md]
+        outputs=[loading_html, results_md, selection]
     ).then(
         fn=lambda: "<script>document.getElementById('results-anchor').scrollIntoView({ behavior: 'smooth' });</script>",
         inputs=[],
         outputs=[scroll_trigger_search]
     )
-    
-    # Wire up the "Get Citations" button.
-    btn_citations.click(
-    handle_get_citations,
-    inputs=[],
-    outputs=[action_loading, details_html]
-    ).then(
+
+    def on_get_citations(selected_titles):
+        valid, msg = validate_selection(selected_titles, 1)
+        if not valid:
+            return gr.update(value=msg, visible=True)
+
+        selected_ids = [paper_id_by_title[title] for title in selected_titles]
+        html_output = "".join([paper_citations.get(pid, "❌ No citations cached.") for pid in selected_ids])
+        return gr.update(value=html_output, visible=True)
+
+    btn_citations.click(on_get_citations, inputs=[selection], outputs=[details_html]).then(
         fn=lambda: "<script>document.getElementById('action-output-anchor').scrollIntoView({ behavior: 'smooth' });</script>",
         inputs=[],
         outputs=[scroll_trigger_action]
     )
-    
-    # Other buttons remain placeholders for now.
-    btn_summary.click(fn=lambda: summarize_papers(paper_ids, paper_title_map), inputs=[], outputs=details_html)
-    btn_bibtex.click(fn=lambda: get_bibtex(paper_ids, paper_title_map), inputs=[], outputs=details_html)
-    btn_compare.click(fn=lambda: compare_papers(paper_ids, paper_title_map), inputs=[], outputs=details_html)
-    
+
+    # ✅ Now add Summarize here:
+    def on_summarize(selected_titles):
+        valid, msg = validate_selection(selected_titles, 1)
+        if not valid:
+            return gr.update(value=msg, visible=True)
+
+        selected_ids = [paper_id_by_title[title] for title in selected_titles]
+        return summarize_papers(selected_ids, paper_title_map)
+
+    btn_summary.click(on_summarize, inputs=[selection], outputs=[details_html])
+
+    # ... btn_summary logic
+
+    def on_bibtex(selected_titles):
+        valid, msg = validate_selection(selected_titles, 1)
+        if not valid:
+            return gr.update(value=msg, visible=True)
+
+        selected_ids = [paper_id_by_title[title] for title in selected_titles]
+        html_output = "".join([paper_bibtex.get(pid, "❌ No BibTeX cached.") for pid in selected_ids])
+        return gr.update(value=html_output, visible=True)
+
+    btn_bibtex.click(on_bibtex, inputs=[selection], outputs=[details_html])
+
+    def on_compare(selected_titles):
+        valid, msg = validate_selection(selected_titles, 2)
+        if not valid:
+            return gr.update(value=msg, visible=True)
+
+        selected_ids = [paper_id_by_title[title] for title in selected_titles]
+        return compare_papers(selected_ids, paper_title_map)
+
+    btn_compare.click(on_compare, inputs=[selection], outputs=[details_html])
+
 demo.launch(share=True)
