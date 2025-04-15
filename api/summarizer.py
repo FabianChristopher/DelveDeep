@@ -6,7 +6,7 @@ os.environ["OPENAI_API_KEY"] = get_openai_api_key()
 client = OpenAI()
 
 def summarize_papers(paper_ids, paper_title_map):
-    selected_ids = paper_ids[:3]
+    selected_ids = paper_ids
 
     paper_infos = []
     for pid in selected_ids:
