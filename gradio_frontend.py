@@ -50,11 +50,25 @@ def search_and_update(query, file):
     paper_ids = []
     paper_title_map = {}
 
+    #Adding loading animation
+    loading_spinner_html = "<div id='loading-spinner'></div>"
+
+    #Show loading animation
+    yield (
+        gr.update(value=loading_spinner_html, visible=True),
+        gr.update(visible=False)
+    )
+
     # If a file is uploaded, extract its content and append it to the query
     if file is not None:
         file_text = extract_text_from_file(file.name)
         if "Error" in file_text:
-            return file_text  # Display error message if file extraction fails
+            yield (
+                gr.update(visible=False), # Disable loading animation
+                gr.update(value= file_text, visible=True) # Error output
+            )
+            return
+        
         query += " " + file_text  # Append extracted content to query
 
     # Extract the main topic keyword from the query
@@ -79,20 +93,62 @@ def search_and_update(query, file):
                     title = paper.get("title", "Unknown Title")
                     paper_ids.append(pid)
                     paper_title_map[pid] = title
-            return markdown_text
-        else:
-            return f"Error: {response.status_code}"
+
+                    yield (
+                        gr.update(visible=False), #Disable loading animation
+                        gr.update(value=markdown_text, visible=True) # results_md
+                    )
+                else:
+                    yield (
+                        gr.update(visible=False),
+                        gr.update(value=f"Error: {response.status_code}", visible=True)
+                    )
     except Exception as e:
-        return f"Request failed: {str(e)}"
+        yield (
+            gr.update(visible=False),
+            gr.update(value=f"Request failed: {str(e)}", visible=True)
+        )
 
 # For now, we leave other action functions as placeholders.
 def action_placeholder():
     return "Other actions not implemented yet."
 
+def handle_get_citations():
+    #Loading animation
+    yield (
+        gr.update(value="<div id='loading-spinner'></div>", visible=True),
+        gr.update(visible=False)
+    )
+
+    #Call Actual Function
+    html_output = get_citations(paper_ids, paper_title_map)
+
+    #Replace loading with result
+    yield (
+        gr.update(visible=False),
+        gr.update(value=html_output, visible=True)
+    )
+
 with gr.Blocks() as demo:
 
     gr.HTML(
     """
+    <script>
+        function scrollToResults() {
+            const target = document.getElementById("results-anchor");
+            if (target) {
+            target.scrollIntoView({ behavior: "smooth", block: "start" });
+            }
+        }
+
+        function scrollToActionOutput() {
+            const target = document.getElementById("action-output-anchor");
+            if (target) {
+              target.scrollIntoView({ behavior: "smooth", block: "start" });
+            }
+        }
+    </script>
+
     <style>
         /*--------ScholarWiz Logo Animation ---------*/
 
@@ -150,6 +206,52 @@ with gr.Blocks() as demo:
             font-family: 'Poppins', sans-serif;
             background-color: #0f172a;
             color: #e2e8f0;
+        }
+
+        #centered-form {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 70vh;
+        }
+
+        #input-section {
+            background-color: #1e293b
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 600px;
+        }
+
+        #subtitle-text {
+            text-align: center;
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+
+        #search-btn {
+            margin-top: 12px;
+        }
+
+        /* --- loading animation --- */
+
+        #loading-spinner {
+            text-align: center;
+            padding: 40px;
+            font-size: 20px;
+            color: #3B82F6;
+        }
+
+        #loading-spinner::after {
+            content: ' Fetching relevant reserach papers....';
+            animation: pulse 1s infinite ease-in-out;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.3; }
+            50% { opacity: 1;  }
+            100% { opacity: 0.3; }
         }
 
         .gradio-container {
@@ -218,37 +320,58 @@ with gr.Blocks() as demo:
     """
 )
 
-    with gr.Row():
+    with gr.Row(elem_id="centered-form"):
         # Left Column: Search and action buttons.
-        with gr.Column(scale=1):
-            gr.Markdown("## DelveDeep - AI Powered Research Assistant", elem_classes="section-card")
-            query_input = gr.Textbox(label="Enter your research query", placeholder="e.g., Find papers on NLP")
+        with gr.Column(scale=1, elem_id="input-section"):
+            gr.Markdown("### <span style='color:#3B82F6;'>DelveDeep</span> - AI Powered Research Assistant", elem_id="subtitle-text")
+            query_input = gr.Textbox(label="Enter your research query", placeholder="e.g., Find papers on NLP", lines=1)
             upload_file = gr.File(label="Upload Document - .pdf, .docx, .txt (optional)")
-            search_button = gr.Button("Search")
-            results_md = gr.Markdown(label="Search Results")
+            search_button = gr.Button("Search", elem_id="search-btn")
+            scroll_trigger_search = gr.HTML(visible=False)
+            scroll_trigger_action = gr.HTML(visible=False)
+            #results_md = gr.Markdown(label="Search Results")
+            gr.HTML("<div id='results-anchor'></div>")
+            loading_html = gr.HTML(visible=False)
+            results_md = gr.Markdown(visible=False)
             
-            with gr.Row():
-                btn_citations = gr.Button("Get Citations", elem_classes="custom-button")
-                btn_summary = gr.Button("Explain Papers", elem_classes="custom-button")
-                btn_bibtex = gr.Button("Get BibTeX Reference", elem_classes="custom-button")
-                btn_compare = gr.Button("Compare Papers", elem_classes="custom-button")                
+            with gr.Row(elem_id="action-btn-row"):
+                btn_citations = gr.Button("Get Citations", elem_classes="action-btn")
+                btn_summary = gr.Button("Explain Papers", elem_classes="action-btn")
+                btn_bibtex = gr.Button("Get BibTeX Reference", elem_classes="action-btn")
+                btn_compare = gr.Button("Compare Papers", elem_classes="action-btn")
+                gr.HTML("<div id='action-output-anchor'></div>")
+
+                action_loading = gr.HTML(visible=False)
+                details_html = gr.HTML(visible=False)                
                 
         # Right Column: Detailed results pane.
-        with gr.Column(scale=1):
-            details_html = gr.HTML(
-                "<div style='border: 2px solid #333; padding: 10px; height: 90vh; overflow-y: auto;'>Detailed Results will appear here.</div>", 
-                label="Detailed Results"
-            )
+        #with gr.Column(scale=1):
+        #    details_html = gr.HTML(
+        #        "<div style='border: 2px solid #333; padding: 10px; height: 90vh; overflow-y: auto;'>Detailed Results will appear here.</div>", 
+        #        label="Detailed Results"
+        #    )
     
     # Wire up the search button.
     search_button.click(
-        fn=search_and_update,
+        search_and_update,
         inputs=[query_input, upload_file],
-        outputs=results_md
+        outputs=[loading_html, results_md]
+    ).then(
+        fn=lambda: "<script>document.getElementById('results-anchor').scrollIntoView({ behavior: 'smooth' });</script>",
+        inputs=[],
+        outputs=[scroll_trigger_search]
     )
     
     # Wire up the "Get Citations" button.
-    btn_citations.click(fn=lambda: get_citations(paper_ids, paper_title_map), inputs=[], outputs=details_html)
+    btn_citations.click(
+    handle_get_citations,
+    inputs=[],
+    outputs=[action_loading, details_html]
+    ).then(
+        fn=lambda: "<script>document.getElementById('action-output-anchor').scrollIntoView({ behavior: 'smooth' });</script>",
+        inputs=[],
+        outputs=[scroll_trigger_action]
+    )
     
     # Other buttons remain placeholders for now.
     btn_summary.click(fn=lambda: summarize_papers(paper_ids, paper_title_map), inputs=[], outputs=details_html)
