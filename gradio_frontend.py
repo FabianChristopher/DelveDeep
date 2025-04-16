@@ -311,7 +311,213 @@ def switch_tab(tab_name, c, s, b, cmp, vis_tabs):
     return vis_tabs, content, tab_name
     
 
-with gr.Blocks() as demo:
+with gr.Blocks(css="""
+
+    * {
+        box-sizing: border-box;
+    }
+
+    body, html, .gradio-container, .gradio-app {
+        margin: 0;
+        font-family: 'Poppins', sans-serif;
+        background: linear-gradient(to bottom, #0f172a, #312e81);
+        color: #e2e8f0; !important;
+        min-height: 100vh;
+        padding: 20px;
+    }
+               
+    .gr-block, .gr-box, .gr-button, .gr-textbox, .gr-markdown {
+        background-color: transparent !important;
+        color: #e2e8f0 !important;
+    }
+           
+    /* ---- App UI Styling ---- */
+    html {
+        scroll-behavior: smooth;
+    }
+               
+    .gr-button,
+    button {
+      background-color: #254c98 !important;
+      color: white !important;
+      border: none !important;
+      font-weight: bold;
+      border-radius: 8px;
+      padding: 10px 20px;
+      transition: all 0.2s ease-in-out;
+    }
+    
+    /* Hover effect */
+    .gr-button:hover,
+    button:hover {
+      background-color: #2563EB !important;
+      box-shadow: 0 0 10px rgba(59, 130, 246, 0.7);
+      transform: scale(1.05);
+      cursor: pointer;
+    }
+    
+    #centered-form {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 70vh;
+    }
+    #input-section {
+        background: rgba(255, 255, 255, 0.05); /* Glassy tint */
+        backdrop-filter: blur(12px); /* Frosted blur */
+        -webkit-backdrop-filter: blur(12px); /* Safari fix */
+        padding: 30px;
+        border-radius: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+        width: 100%;
+        max-width: 600px;
+        transition: all 0.3s ease;
+    }
+    #subtitle-text {
+        text-align: center;
+        font-size: 22px;
+        font-weight: bold;
+        color: #ffffff;
+        background: linear-gradient(90deg, #60a5fa, #818cf8);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 20px;
+    }
+    #search-btn {
+        margin-top: 12px;
+    }
+    /* --- loading animation --- */
+    #loading-spinner {
+        text-align: center;
+        padding: 40px;
+        font-size: 20px;
+        color: #3B82F6;
+    }
+    #loading-spinner::after {
+        content: ' Fetching relevant reserach papers....';
+        animation: pulse 1s infinite ease-in-out;
+    }
+    @keyframes pulse {
+        0% { opacity: 0.3; }
+        50% { opacity: 1;  }
+        100% { opacity: 0.3; }
+    }
+    h2, h3 {
+        color: #ffffff;
+    }
+    .section-card {
+        background-color: #1e293b;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        margin-bottom: 20px;
+    }
+    .custom-button {
+        background-color: #3B82F6 !important;
+        color: white !important;
+        border: none !important;
+        font-weight: bold !important;
+        border-radius: 8px !important;
+        padding: 10px 20px !important;
+        margin-top: 8px !important;
+    }
+    .custom-button:hover {
+        background-color: #2563EB !important;
+    }
+    #action-output-container {
+        width: 100%;
+        max-width: 1000px;
+        margin: 20px auto;
+    }
+    #details_html {
+        padding: 20px;
+        background-color: #1e293b;
+        border-radius: 12px;
+        margin-top: 20px;
+        color: #e2e8f0;
+        overflow-x: auto;
+    }
+    .output-box {
+        background-color: #1e293b;
+        padding: 15px;
+        border-radius: 10px;
+        color: #e2e8f0;
+        font-size: 16px;
+        overflow-y: auto;
+        max-height: 70vh;
+    }
+    .gr-button {
+        margin-right: 10px;
+    }
+    .citation-box pre {
+        white-space: pre-wrap;   /* Wrap lines instead of scrolling horizontally */
+        word-wrap: break-word;   /* Break long words if necessary */
+        overflow-x: auto;        /* Allow scroll only if needed */
+        font-family: 'Courier New', monospace;
+        font-size: 14px;
+        color: #e2e8f0;
+    }
+    .citation-box {
+        border: 2px solid #333;
+        padding: 16px;
+        margin-bottom: 20px;
+        background-color: #1a1a1a;
+        border-radius: 8px;
+    }
+    .citation-divider {
+        border-bottom: 1px solid #444;
+        margin: 12px 0;
+    }
+    .citation-block {
+        margin-bottom: 8px;
+    }
+    .single-citation {
+        margin-bottom: 8px;
+        line-height: 1.4;
+    }
+    .citation-content {
+        padding-left: 16px;
+        color: #ccc;
+    }
+    #tab-bar .gr-radio {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        margin-top: 20px;
+    }
+    #tab-bar .gr-radio label {
+        background-color: #1e293b;
+        color: #e2e8f0;
+        border: 1px solid #3B82F6;
+        padding: 10px 20px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: 0.2s ease-in-out;
+    }
+    #tab-bar .gr-radio input:checked + label {
+        background-color: #3B82F6;
+        color: white;
+        font-weight: bold;
+    }
+    #tab-bar .gr-radio label:hover {
+        background-color: #334155;
+    }
+    #tab_selector label {
+      background-color: #1e293b;
+      color: #e2e8f0;
+      border: 1px solid #3B82F6;
+      border-radius: 6px;
+      margin-right: 10px;
+      padding: 6px 12px;
+      cursor: pointer;
+    }
+    
+    #tab_selector input[type="radio"]:checked + label {
+      background-color: #3B82F6;
+      color: white;
+    }
+    """) as demo:
   
     state_citations = gr.State("")
     state_summary = gr.State("")
@@ -325,6 +531,9 @@ with gr.Blocks() as demo:
     gr.HTML(
     """
     <style>
+
+        
+    
         /*--------ScholarWiz Logo Animation ---------*/
 
         .logo-row{
@@ -374,197 +583,6 @@ with gr.Blocks() as demo:
                 opacity: 1;
             }
         }
-
-        /* ---- App UI Styling ---- */
-
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: #0f172a;
-            color: #e2e8f0;
-        }
-
-        #centered-form {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 70vh;
-        }
-
-        #input-section {
-            background-color: #1e293b
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-            width: 100%;
-            max-width: 600px;
-        }
-
-        #subtitle-text {
-            text-align: center;
-            font-size: 20px;
-            margin-bottom: 20px;
-        }
-
-        #search-btn {
-            margin-top: 12px;
-        }
-
-        /* --- loading animation --- */
-
-        #loading-spinner {
-            text-align: center;
-            padding: 40px;
-            font-size: 20px;
-            color: #3B82F6;
-        }
-
-        #loading-spinner::after {
-            content: ' Fetching relevant reserach papers....';
-            animation: pulse 1s infinite ease-in-out;
-        }
-
-        @keyframes pulse {
-            0% { opacity: 0.3; }
-            50% { opacity: 1;  }
-            100% { opacity: 0.3; }
-        }
-
-        .gradio-container {
-            padding: 20px;
-        }
-
-        h2, h3 {
-            color: #ffffff;
-        }
-
-        .section-card {
-            background-color: #1e293b;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-            margin-bottom: 20px;
-        }
-
-        .custom-button {
-            background-color: #3B82F6 !important;
-            color: white !important;
-            border: none !important;
-            font-weight: bold !important;
-            border-radius: 8px !important;
-            padding: 10px 20px !important;
-            margin-top: 8px !important;
-        }
-
-        .custom-button:hover {
-            background-color: #2563EB !important;
-        }
-
-        #action-output-container {
-            width: 100%;
-            max-width: 1000px;
-            margin: 20px auto;
-        }
-
-        #details_html {
-            padding: 20px;
-            background-color: #1e293b;
-            border-radius: 12px;
-            margin-top: 20px;
-            color: #e2e8f0;
-            overflow-x: auto;
-        }
-
-        .output-box {
-            background-color: #1e293b;
-            padding: 15px;
-            border-radius: 10px;
-            color: #e2e8f0;
-            font-size: 16px;
-            overflow-y: auto;
-            max-height: 70vh;
-        }
-
-        .gr-button {
-            margin-right: 10px;
-        }
-
-        .citation-box pre {
-            white-space: pre-wrap;   /* Wrap lines instead of scrolling horizontally */
-            word-wrap: break-word;   /* Break long words if necessary */
-            overflow-x: auto;        /* Allow scroll only if needed */
-            font-family: 'Courier New', monospace;
-            font-size: 14px;
-            color: #e2e8f0;
-        }
-
-        .citation-box {
-            border: 2px solid #333;
-            padding: 16px;
-            margin-bottom: 20px;
-            background-color: #1a1a1a;
-            border-radius: 8px;
-        }
-
-        .citation-divider {
-            border-bottom: 1px solid #444;
-            margin: 12px 0;
-        }
-
-        .citation-block {
-            margin-bottom: 8px;
-        }
-
-        .single-citation {
-            margin-bottom: 8px;
-            line-height: 1.4;
-        }
-
-        .citation-content {
-            padding-left: 16px;
-            color: #ccc;
-        }
-
-        #tab-bar .gr-radio {
-            display: flex;
-            justify-content: center;
-            gap: 12px;
-            margin-top: 20px;
-        }
-
-        #tab-bar .gr-radio label {
-            background-color: #1e293b;
-            color: #e2e8f0;
-            border: 1px solid #3B82F6;
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: 0.2s ease-in-out;
-        }
-
-        #tab-bar .gr-radio input:checked + label {
-            background-color: #3B82F6;
-            color: white;
-            font-weight: bold;
-        }
-
-        #tab-bar .gr-radio label:hover {
-            background-color: #334155;
-        }
-
-        #tab_selector label {
-          background-color: #1e293b;
-          color: #e2e8f0;
-          border: 1px solid #3B82F6;
-          border-radius: 6px;
-          margin-right: 10px;
-          padding: 6px 12px;
-          cursor: pointer;
-        }
-        
-        #tab_selector input[type="radio"]:checked + label {
-          background-color: #3B82F6;
-          color: white;
-        }
     </style>
 
     <div style="margin-top: 1px; text-align: center;">
@@ -586,7 +604,7 @@ with gr.Blocks() as demo:
         </div>
     </div>
     """
-)
+    )
 
     with gr.Row(elem_id="centered-form"):
         # Left Column: Search and action buttons.
