@@ -38,7 +38,7 @@ def summarize_papers(paper_ids, paper_title_map):
         summary = f"❌ Error generating summary: {str(e)}"
 
     html = f"""
-    <div style="border: 2px solid #333; padding: 10px; height: 90vh; overflow-y: auto;">
+    <div class="citation-box">
         <h2>Paper Summaries</h2>
         <pre>{summary}</pre>
     </div>

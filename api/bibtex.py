@@ -2,7 +2,7 @@ import requests
 
 def format_bibtex_box(content):
     html = f"""
-    <div style="border: 2px solid #333; padding: 10px; height: 90vh; overflow-y: auto;">
+    <div class="citation-box">
         <h2>BibTeX References</h2>
         {content}
     </div>

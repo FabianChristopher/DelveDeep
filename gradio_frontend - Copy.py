@@ -212,10 +212,10 @@ def handle_summarize(selected_titles, visible_tabs_value):
 
 def handle_bibtex(selected_titles, visible_tabs_value):
 
-    if "BibTeX" not in visible_tabs_value:
-        visible_tabs_value.append("BibTeX")
+    if "BibTex" not in visible_tabs_value:
+        visible_tabs_value.append("BibTex")
 
-    tabs = render_tabs("BibTeX", visible_tabs_value)
+    tabs = render_tabs("BibTex", visible_tabs_value)
 
     yield (
         gr.update(value="<div id='loading-spinner'></div>", visible=True),
@@ -300,15 +300,15 @@ def render_tabs(active, available_tabs):
     buttons += '</div>'
     return buttons
 
-def switch_tab(tab_name, c, s, b, cmp, vis_tabs):
+def switch_tab(tab_name, citations, summary, bibtex, compare):
     content = {
-        "Citations": c,
-        "Summary": s,
-        "BibTeX": b,
-        "Compare": cmp
+        "Citations": citations,
+        "Summary": summary,
+        "BibTeX": bibtex,
+        "Compare": compare
     }.get(tab_name, "")
-    print(f"[SWITCH] Tab: {tab_name} | Content preview: {content[:100]}")
-    return vis_tabs, content, tab_name
+    print(f"[SWITCH] Tab selected: {tab_name}, content preview: {content[:100]}")
+    return gr.update(value=content, visible=True), tab_name
     
 
 with gr.Blocks() as demo:
@@ -619,22 +619,22 @@ with gr.Blocks() as demo:
         tab_output_html = gr.HTML()
         #details_html = gr.HTML(visible=True)
         tab_output = gr.HTML(visible=True)
+           
+    tab_selector = gr.Radio(
+        choices=["Summary", "Citations", "BibTeX", "Compare"],
+        value="Summary",
+        label="View Output",
+        interactive=True,
+        elem_id="tab-selector"
+    )
 
-    with gr.Row():       
-        tab_selector = gr.Radio(
-            choices=["Summary", "Citations", "BibTeX", "Compare"],
-            value="Summary",
-            interactive=True,
-            elem_id="tab-bar"
-        )
-
-    tab_output = gr.HTML(visible=True)
+    tab_output = gr.HTML(elem_id="tab_output")
 
     tab_selector.change(
     fn=switch_tab,
     inputs=[tab_selector, state_citations, state_summary, state_bibtex, state_compare, visible_tabs],
     outputs=[tabs_html, tab_output, active_tab]
-    )
+)
 
     tab_tracker.change(
     switch_tab,
@@ -652,51 +652,31 @@ with gr.Blocks() as demo:
     def on_get_citations(selected_titles):
         valid, msg = validate_selection(selected_titles, 1)
         if not valid:
-            return msg
+            return gr.update(value=msg, visible=True)
 
         selected_ids = [paper_id_by_title[title] for title in selected_titles]
         html_output = "".join([paper_citations.get(pid, "❌ No citations cached.") for pid in selected_ids])
-        return html_output
-    
-    
-    def handle_citations_click(selected_titles):
-        html = on_get_citations(selected_titles)  # <- returns plain HTML string
-        print(f"[DEBUG] Citations Output: {html[:100]}")
-        return html, "Citations"
+        return gr.update(value=html_output, visible=True)
 
     btn_citations.click(
-        fn=handle_citations_click,
-        inputs=[selection],
-        outputs=[state_citations, tab_selector]
-    ).then(
-    fn=switch_tab,
-    inputs=[tab_selector, state_citations, state_summary, state_bibtex, state_compare, visible_tabs],
-    outputs=[tabs_html, tab_output, active_tab]
-    )
-
+    fn=lambda selected: (on_get_citations(selected), "Citations"),
+    inputs=[selection],
+    outputs=[state_citations, tab_selector]
+)
     # ✅ Now add Summarize here:
     def on_summarize(selected_titles):
         valid, msg = validate_selection(selected_titles, 1)
         if not valid:
-            return msg
+            return gr.update(value=msg, visible=True)
 
         selected_ids = [paper_id_by_title[title] for title in selected_titles]
         result_html = summarize_papers(selected_ids, paper_title_map)
-        return result_html
-
-    def handle_summary_click(selected_titles):
-        html = on_summarize(selected_titles)  # <- returns plain HTML string
-        print(f"[DEBUG] Summary Output: {html[:100]}")
-        return html, "Summary"
+        return gr.update(value=result_html, visible=True)
 
     btn_summary.click(
-        fn=handle_summary_click,
+        fn=lambda selected: (on_summarize(selected), "Summary"),
         inputs=[selection],
         outputs=[state_summary, tab_selector]
-    ).then(
-    fn=switch_tab,
-    inputs=[tab_selector, state_citations, state_summary, state_bibtex, state_compare, visible_tabs],
-    outputs=[tabs_html, tab_output, active_tab]
     )
 
     # ... btn_summary logic
@@ -704,62 +684,33 @@ with gr.Blocks() as demo:
     def on_bibtex(selected_titles):
         valid, msg = validate_selection(selected_titles, 1)
         if not valid:
-            return msg
+            return gr.update(value=msg, visible=True)
 
         selected_ids = [paper_id_by_title[title] for title in selected_titles]
         html_output = "".join([paper_bibtex.get(pid, "❌ No BibTeX cached.") for pid in selected_ids])
-        return html_output
-    
-    def handle_bibtex_click(selected_titles):
-        html = on_bibtex(selected_titles)  # <- returns plain HTML string
-        print(f"[DEBUG] BibTeX Output: {html[:100]}")
-        return html, "BibTeX"
+        return gr.update(value=html_output, visible=True)
 
     btn_bibtex.click(
-        fn=handle_bibtex_click,
+        fn=lambda selected: (on_bibtex(selected), "BibTeX"),
         inputs=[selection],
         outputs=[state_bibtex, tab_selector]
-    ).then(
-    fn=switch_tab,
-    inputs=[tab_selector, state_citations, state_summary, state_bibtex, state_compare, visible_tabs],
-    outputs=[tabs_html, tab_output, active_tab]
     )
 
     def on_compare(selected_titles):
         valid, msg = validate_selection(selected_titles, 2)
         if not valid:
-            return msg
+            return gr.update(value=msg, visible=True)
 
         selected_ids = [paper_id_by_title[title] for title in selected_titles]
         result_html = compare_papers(selected_ids, paper_title_map)
-        return result_html
-    
-    def handle_compare_click(selected_titles):
-        html = on_compare(selected_titles)  # <- returns plain HTML string
-        print(f"[DEBUG] Compare Output: {html[:100]}")
-        return html, "Compare"
+        return gr.update(value=result_html, visible=True)
 
     btn_compare.click(
-        fn=handle_compare_click,
+        fn=lambda selected: (on_compare(selected), "Compare"),
         inputs=[selection],
         outputs=[state_compare, tab_selector]
-    ).then(
-    fn=switch_tab,
-    inputs=[tab_selector, state_citations, state_summary, state_bibtex, state_compare, visible_tabs],
-    outputs=[tabs_html, tab_output, active_tab]
     )
 
-    def update_tab_content(selected_tab):
-        if selected_tab == "Citations":
-            return "<h3>📚 Citation Output Appears Here</h3>"
-        elif selected_tab == "Summary":
-            return "<h3>📝 Summary Output Appears Here</h3>"
-        elif selected_tab == "BibTeX":
-            return "<h3>🔖 BibTeX Reference Output Appears Here</h3>"
-        elif selected_tab == "Compare":
-            return "<h3>📊 Comparison Output Appears Here</h3>"
-        else:
-            return "<p>Select a tab to view content.</p>"
     
 
 demo.launch(share=True)

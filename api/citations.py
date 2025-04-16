@@ -2,7 +2,7 @@ import requests
 
 def format_citations_box(content):
     html = f"""
-    <div style="border: 2px solid #333; padding: 10px; height: 90vh; overflow-y: auto;">
+    <div class="citation-box">
         <h2>Citations</h2>
         {content}
     </div>
@@ -37,10 +37,17 @@ def get_citations(paper_ids, paper_title_map):
                     citing_authors = ", ".join([author.get("name", "Unknown") for author in citing.get("authors", [])])
                     contexts = citation.get("contexts", [])
                     context_text = "<br>".join([f"&nbsp;&nbsp;- {ctx}" for ctx in contexts]) if contexts else "&nbsp;&nbsp;- No context provided."
-                    citations_html += f"<p>* <strong>{citing_title}</strong><br>&nbsp;&nbsp;Authors: {citing_authors}<br>&nbsp;&nbsp;Contexts:<br>{context_text}</p>"
+                    citations_html += f"""
+                                        <div class="single-citation">
+                                            <span>* <strong>{citing_title}</strong></span><br>
+                                            <span>&nbsp;&nbsp;Authors: {citing_authors}</span><br>
+                                            <span>&nbsp;&nbsp;Contexts:</span><br>
+                                            <div class="citation-context">{context_text}</div>
+                                        </div>
+                                        """
             else:
                 citations_html += "<p>No citations found.</p>"
-            all_citations_html += citations_html + "<hr>"
+            all_citations_html += f"<div class='citation-block'>{citations_html}</div><div class='citation-divider'></div>"
         except Exception as e:
             all_citations_html += f"<p>Error retrieving citations for paper {pid}: {str(e)}</p><hr>"
     
