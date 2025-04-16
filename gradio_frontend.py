@@ -338,7 +338,7 @@ with gr.Blocks(css="""
                
     .gr-button,
     button {
-      background-color: #254c98 !important;
+      background-color: #3B82F6 !important;
       color: white !important;
       border: none !important;
       font-weight: bold;
@@ -363,7 +363,7 @@ with gr.Blocks(css="""
         min-height: 70vh;
     }
     #input-section {
-        background: rgba(255, 255, 255, 0.05); /* Glassy tint */
+        background: linear-gradient(135deg, #151C3C 0%, #1E2A57 100%); /* Glassy tint */
         backdrop-filter: blur(12px); /* Frosted blur */
         -webkit-backdrop-filter: blur(12px); /* Safari fix */
         padding: 30px;
@@ -371,22 +371,205 @@ with gr.Blocks(css="""
         border: 1px solid rgba(255, 255, 255, 0.1);
         box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
         width: 100%;
-        max-width: 600px;
+        max-width: 1000px;
         transition: all 0.3s ease;
     }
     #subtitle-text {
         text-align: center;
         font-size: 22px;
         font-weight: bold;
-        color: #ffffff;
+        color: #ffffff !important; 
         background: linear-gradient(90deg, #60a5fa, #818cf8);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         margin-bottom: 20px;
     }
+               
+    #query-box {
+        background: linear-gradient(90deg,rgba(92, 70, 156, 1) 0%, rgba(237, 83, 181, 0.74) 100%);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 16px;
+        padding: 12px;
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        min-height: 180px;
+        max-height: 200px;
+        color: #0A0F2C;     
+    }
+               
+    #query-box textarea {
+      background: #262765 !important;
+      color: #C3C7D1 !important;
+      border: none !important;
+      font-size: 14px !important;
+      min-height: 150px;
+      max-height: 170px;
+    }
+
+    #query-box textarea::placeholder {
+      color: #C3C7D1 !important;
+      font-style: italic;
+    }
+               
+    #query-box input {
+        background: transparent !important;
+        color: #F2F3F5 !important;
+        font-size: 14px;
+    }
+               
+    #query-box input::placeholder {
+        color: #FFFFFF;         
+    }
+               
+    #upload-box {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(237, 83, 181, 0.0.15);
+        border-radius: 10px;
+        min-height: 40px;
+        max-height: 60px;
+        backdrop-filter: blur(6px);
+        color: #e2e8f0;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;             
+    }
+               
+    #upload-box svg {
+      display: none !important;
+    }
+
+    #upload-box p {
+      display: none !important;
+    }
+               
+    #upload-box label {
+      font-size: 12px;
+    }
+               
+    #upload-box .wrap:hover {
+        border-color: #60a5fa;
+    }
+               
+    #upload-box .wrap.svelte-* {
+        max-height: 100px;
+        overflow: hidden;
+    }
+               
     #search-btn {
         margin-top: 12px;
     }
+               
+    #results-box {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 20px;
+      border-radius: 12px;
+      /*box-shadow: 0 0 12px rgba(92, 70, 156, 0.3);*/
+      box-shadow: 0 0 12px rgba(237, 83, 181, 0.45), 0 0 24px rgba(237, 83, 181, 0.25);
+      margin-top: 20px;
+      color: #e2e8f0;
+    }
+               
+    #paper-checkboxes {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 20px;
+      box-shadow: 0 0 12px rgba(59, 130, 246, 0.2); /* bluish glow */
+    }
+
+    /* Style each checkbox label */
+    #paper-checkboxes label {
+      display: inline-block;
+      margin: 6px;
+      padding: 10px 16px;
+      background: rgba(255, 255, 255, 0.04);
+      border-radius: 8px;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.3s ease;
+      font-size: 14px;
+      color: #e2e8f0;
+    }
+
+    /* Hide the default checkbox */
+    #paper-checkboxes input[type="checkbox"] {
+      display: none;
+    }
+
+    /* Hover effect */
+    #paper-checkboxes label:hover {
+      border: 1px solid #3B82F6;
+      background: rgba(59, 130, 246, 0.15);
+    }
+
+    /* ✅ When checkbox is selected */
+    #paper-checkboxes label:has(input:checked) {
+      background-color: #3B82F6;
+      color: white;
+      font-weight: 600;
+      box-shadow: 0 0 10px rgba(59, 130, 246, 0.4);
+      border: 1px solid #3B82F6;
+    }
+               
+    /* --- Radio Tab Switching --- */
+               
+    .tab-container-wrapper {
+       max-width: 1000px;
+       margin: 0 auto;
+       padding: 0 20px;
+    }
+               
+    #tab-bar {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      padding: 20px;
+      width: 100%;
+      max-width: 1000px;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 12px;
+      margin-top: 30px;
+      box-shadow: 0 0 10px rgba(59, 130, 246, 0.1);
+    }
+
+    #tab-bar label {
+      background: rgba(255, 255, 255, 0.05);
+      color: #e2e8f0;
+      padding: 10px 18px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 1px solid transparent;
+      font-weight: 500;
+      font-size: 14px;
+    }
+
+    #tab-bar label:hover {
+      background: rgba(59, 130, 246, 0.2);
+      border-color: rgba(59, 130, 246, 0.6);
+    }
+
+    #tab-bar input[type="radio"] {
+      display: none;
+    }
+
+    /* Active tab highlight (Gradio injects .selected) */
+    #tab-bar input[type="radio"]:checked + label,
+    #tab-bar .selected {
+      background: #3B82F6;
+      color: white;
+      font-weight: 600;
+      border: 1px solid #3B82F6;
+      box-shadow: 0 0 8px rgba(59, 130, 246, 0.4);
+    }
+               
+    #tab-output {
+      animation: fadeIn 0.4s ease-in-out;
+    }
+    
     /* --- loading animation --- */
     #loading-spinner {
         text-align: center;
@@ -610,16 +793,16 @@ with gr.Blocks(css="""
         # Left Column: Search and action buttons.
         with gr.Column(scale=1, elem_id="input-section"):
             gr.Markdown("### <span style='color:#3B82F6;'>DelveDeep</span> - AI Powered Research Assistant", elem_id="subtitle-text")
-            query_input = gr.Textbox(label="Enter your research query", placeholder="e.g., Find papers on NLP", lines=1)
-            upload_file = gr.File(label="Upload Document - .pdf, .docx, .txt (optional)")
+            query_input = gr.Textbox(label="How can I help with your research today?", placeholder="Try writing something like 'Find research papers on Quantum Computing'", lines=1, elem_id="query-box")
+            upload_file = gr.File(label="Upload Document - .pdf, .docx, .txt (optional)", elem_id="upload-box")
             search_button = gr.Button("Search", elem_id="search-btn")
 
             #results_md = gr.Markdown(label="Search Results")
             gr.HTML("<div id='results-anchor'></div>")
             loading_html = gr.HTML(visible=False)
-            results_md = gr.Markdown(visible=False)
+            results_md = gr.Markdown(visible=False, elem_id="results-box")
 
-            selection = gr.CheckboxGroup(label="Select Papers", choices=[], visible=True)
+            selection = gr.CheckboxGroup(label="Select Papers", choices=[], visible=False, elem_id="paper-checkboxes")
             
             with gr.Row(elem_id="action-btn-row"):
                 btn_citations = gr.Button("Get Citations", elem_classes="action-btn")
@@ -638,15 +821,18 @@ with gr.Blocks(css="""
         #details_html = gr.HTML(visible=True)
         tab_output = gr.HTML(visible=True)
 
-    with gr.Row():       
+    with gr.Row():
+        gr.HTML('<div class="tab-container-row">')
         tab_selector = gr.Radio(
             choices=["Summary", "Citations", "BibTeX", "Compare"],
             value="Summary",
             interactive=True,
-            elem_id="tab-bar"
+            elem_id="tab-bar",
+            label=""
         )
+        gr.HTML('</div>')
 
-    tab_output = gr.HTML(visible=True)
+    tab_output = gr.HTML(visible=True, elem_id="tab-output")
 
     tab_selector.change(
     fn=switch_tab,
