@@ -111,7 +111,7 @@ def search_and_update(query, file):
 
                     # preload citations and bibtex
                     paper_citations[pid] = get_citations([pid], paper_title_map)
-                    paper_bibtex[pid] = get_bibtex([pid], paper_title_map)
+                    paper_bibtex[pid] = get_bibtex([pid], paper_title_map, papers)
 
                     title = paper.get("title", "Unknown Title")
                     paper_ids.append(pid)
