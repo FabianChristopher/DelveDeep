@@ -461,6 +461,19 @@ with gr.Blocks(css="""
         overflow: hidden;
     }
                
+    .svelte-12ioyct { /* Target the "Click to upload" span if needed */
+        font-size: 0px; /* Hide the "Click to upload" text */
+    }
+               
+    .svelte-12ioyct .icon-wrap svg {
+        width: 18px !important; /* Increase the width of the icon */
+        height: 18px !important; /* Increase the height of the icon */
+    }
+               
+    .svelte-1rvzbk6 {
+        padding-right: 30px;           
+    }
+               
     #search-btn {
         margin-top: 12px;
     }
@@ -530,8 +543,7 @@ with gr.Blocks(css="""
     }
                
     .tab-container-wrapper {
-       max-width: 1000px;
-       min-width:0;
+       width: 60%;
     }
                
     #tab-bar {
@@ -617,9 +629,9 @@ with gr.Blocks(css="""
       width: 8px;
       height: 8px;
       border-radius: 50%;
-      background: #000;
+      background: #ec2eaf;
       top: calc(50% - 4px);
-      left: -8px;
+      left: calc(50% -4px);
       animation: inherit;
       animation-name: l7-1;
     }
@@ -633,11 +645,11 @@ with gr.Blocks(css="""
     }
 
     @keyframes l7-1 {
-     20%  {left:0px}
-     40%  {left:calc(50%  - 4px)}
-     60%  {left:calc(100% - 8px)}
-     80%,
-     100% {left:100%}
+        0% { left: calc(50% - 4px); }   /* Start at the center */
+        20% { left: 0px; }              /* Move to the left */
+        40% { left: calc(50% - 4px); }   /* Move back to the center */
+        60% { left: calc(100% - 8px); }  /* Move to the right */
+        80%, 100% { left: calc(50% - 4px); } /* Move back to the center */
     }
 
     /* Style for the text */
@@ -646,6 +658,7 @@ with gr.Blocks(css="""
       color: #3B82F6;
       margin-top: 10px;
       font-weight: bold;
+      text-align: center;
     }
 
     h2, h3 {
@@ -702,7 +715,7 @@ with gr.Blocks(css="""
         font-family: 'Consolas', monospace; /* A more modern monospace font */
         font-size: 14px;
         color: #d4dae0; /* A lighter, more modern gray */
-        background-color: #1e293b; /* Darker background to blend better */
+        background-color: #151C3C; /* Darker background to blend better */
         padding: 12px; /* Add some padding inside the pre tag */
         border-radius: 6px; /* Slightly rounded corners for the text block */
         border: 1px solid #334155; /* Subtle border */
@@ -710,7 +723,7 @@ with gr.Blocks(css="""
 
     .citation-box {
         margin-bottom: 20px;
-        background-color: #1e293b; /* Match pre background or slightly lighter */
+        background-color: #151C3C; /* Match pre background or slightly lighter */
         border-radius: 8px;
         border: 1px solid #334155; /* Consistent border */
         padding: 16px;
@@ -884,9 +897,6 @@ with gr.Blocks(css="""
     
     gr.HTML("<div id='action-output-anchor'></div>")
     with gr.Column(elem_id="action-output-container"):
-        scroll_trigger_search = gr.HTML(visible=False)
-        scroll_trigger_action = gr.HTML(visible=False)
-        action_loading = gr.HTML(visible=False)
         tabs_html = gr.HTML()
         tab_output_html = gr.HTML()
         #details_html = gr.HTML(visible=True)
@@ -894,6 +904,7 @@ with gr.Blocks(css="""
 
     with gr.Row():
         with gr.Column(elem_id="tab-bar-container", scale=1, min_width=0, elem_classes="tab-row-container"):       
+            switch_tabs_text = gr.HTML("<span style='color:#e2e8f0; background-color:#151C3C; padding: 5px 10px; border-radius: 8px; margin-right: 10px;'>Switch Tabs from here:</span>")
             tab_selector = gr.Radio(
                 choices=["Summary", "Citations", "BibTeX", "Compare"],
                 value="Summary",
