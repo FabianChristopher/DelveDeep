@@ -64,7 +64,10 @@ def search_and_update(query, file):
     paper_id_by_title = {}
 
     #Adding loading animation
-    loading_spinner_html = "<div id='loading-spinner'></div>"
+    loading_spinner_html = """
+        <div class="loader"></div>
+        <div id="loading-text">Wiz is researching, please wait...</div>
+        """
 
     #Show loading animation
     yield (
@@ -146,7 +149,7 @@ def handle_get_citations(selected_titles, visible_tabs_value):
     tabs = render_tabs("Citations", visible_tabs_value)
 
     yield (
-        gr.update(value="<div id='loading-spinner'></div>", visible=True),
+        gr.update(value="<div class='loader'></div><div id='loading-text'>Wiz is researching, please wait...</div>", visible=True),
         gr.update(value=""),  # Clear tabs_html
         gr.update(value=""),  # Clear tab_output_html
         gr.update(value=""),  # Clear state_citations
@@ -182,7 +185,7 @@ def handle_summarize(selected_titles, visible_tabs_value):
     tabs = render_tabs("Summary", visible_tabs_value)
 
     yield (
-        gr.update(value="<div id='loading-spinner'></div>", visible=True),
+        gr.update(value="<div class='loader'></div><div id='loading-text'>Wiz is researching, please wait...</div>", visible=True),
         gr.update(visible=False),  # tab_output
         gr.update(value=""),       # tabs_html
         gr.update(value=""),       # tab_output
@@ -218,7 +221,7 @@ def handle_bibtex(selected_titles, visible_tabs_value):
     tabs = render_tabs("BibTeX", visible_tabs_value)
 
     yield (
-        gr.update(value="<div id='loading-spinner'></div>", visible=True),
+        gr.update(value="<div class='loader'></div><div id='loading-text'>Wiz is researching, please wait...</div>", visible=True),
         gr.update(visible=False),
         gr.update(value=""),
         gr.update(value=""),
@@ -254,7 +257,7 @@ def handle_compare(selected_titles, visible_tabs_value):
     tabs = render_tabs("Compare", visible_tabs_value)
 
     yield (
-        gr.update(value="<div id='loading-spinner'></div>", visible=True),
+        gr.update(value="<div class='loader'></div><div id='loading-text'>Wiz is researching, please wait...</div>", visible=True),
         gr.update(visible=False),
         gr.update(value=""),
         gr.update(value=""),
@@ -320,7 +323,7 @@ with gr.Blocks(css="""
     body, html, .gradio-container, .gradio-app {
         margin: 0;
         font-family: 'Poppins', sans-serif;
-        background: linear-gradient(to bottom, #0f172a, #312e81);
+        background: linear-gradient(to bottom, #0f172a, #312e81) !important;
         color: #e2e8f0; !important;
         min-height: 100vh;
         padding: 20px;
@@ -386,7 +389,7 @@ with gr.Blocks(css="""
     }
                
     #query-box {
-        background: linear-gradient(90deg,rgba(92, 70, 156, 1) 0%, rgba(237, 83, 181, 0.74) 100%);
+        background: linear-gradient(90deg,rgba(92, 70, 156, 1) 0%, rgba(204, 37, 123, 1) 100%);
         border: 1px solid rgba(255, 255, 255, 0.15);
         border-radius: 16px;
         padding: 12px;
@@ -398,7 +401,7 @@ with gr.Blocks(css="""
     }
                
     #query-box textarea {
-      background: #262765 !important;
+      background: #151C3C !important;
       color: #C3C7D1 !important;
       border: none !important;
       font-size: 14px !important;
@@ -436,7 +439,9 @@ with gr.Blocks(css="""
     }
                
     #upload-box svg {
-      display: none !important;
+      /*display: none !important;*/
+      height:16px;
+      width:16px;
     }
 
     #upload-box p {
@@ -472,12 +477,12 @@ with gr.Blocks(css="""
     }
                
     #paper-checkboxes {
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      border-radius: 12px;
+      background: #151C3C !important;
+      border: 1px solid rgba(255, 255, 255, 0.06) !important;
+      border-radius: 12px !important;
+      box-shadow: 0 0 12px rgba(237, 83, 181, 0.45), 0 0 24px rgba(237, 83, 181, 0.25) !important;
       padding: 20px;
-      margin-top: 20px;
-      box-shadow: 0 0 12px rgba(59, 130, 246, 0.2); /* bluish glow */
+      /*box-shadow: 0 0 12px rgba(59, 130, 246, 0.2);  bluish glow */
     }
 
     /* Style each checkbox label */
@@ -516,23 +521,30 @@ with gr.Blocks(css="""
                
     /* --- Radio Tab Switching --- */
                
+    #tab-bar-container {
+        display: flex; /* To contain and potentially align the tab bar */
+        justify-content: center; /* Center the tab bar horizontally */
+        width: 100%; /* Make it take the full width of its container */
+        max-width: 1000px; /* Limit the maximum width */
+        margin: 20px auto; /* Add some top/bottom margin and center horizontally */       
+    }
+               
     .tab-container-wrapper {
        max-width: 1000px;
-       margin: 0 auto;
-       padding: 0 20px;
+       min-width:0;
     }
                
     #tab-bar {
       display: flex;
       justify-content: center;
       gap: 12px;
-      padding: 20px;
+      padding: 10px;
       width: 100%;
+      min-width:0;
       max-width: 1000px;
-      background: rgba(255, 255, 255, 0.03);
+      background: #151C3C;
       border-radius: 12px;
-      margin-top: 30px;
-      box-shadow: 0 0 10px rgba(59, 130, 246, 0.1);
+      box-shadow: 0 0 5px rgba(59, 130, 246, 0.1);
     }
 
     #tab-bar label {
@@ -569,23 +581,73 @@ with gr.Blocks(css="""
     #tab-output {
       animation: fadeIn 0.4s ease-in-out;
     }
+               
+    @keyframes fadein {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
     
     /* --- loading animation --- */
-    #loading-spinner {
-        text-align: center;
-        padding: 40px;
-        font-size: 20px;
-        color: #3B82F6;
+               
+    .gradio-progress-bar, .gradio-loading-bar {
+        background:  rgba(237, 83, 181, 0.74) 100% !important;  
     }
-    #loading-spinner::after {
-        content: ' Fetching relevant reserach papers....';
-        animation: pulse 1s infinite ease-in-out;
+
+               
+    .loader{
+      width: 40px;
+      aspect-ratio: 1;
+      --c:no-repeat linear-gradient(#000 0 0);
+      background: 
+        var(--c) 0    0,
+        var(--c) 0    100%, 
+        var(--c) 50%  0,  
+        var(--c) 50%  100%, 
+        var(--c) 100% 0, 
+        var(--c) 100% 100%;
+      background-size: 8px 50%;
+      animation: l7-0 1s infinite;
+      position: relative;
+      overflow: hidden;
     }
-    @keyframes pulse {
-        0% { opacity: 0.3; }
-        50% { opacity: 1;  }
-        100% { opacity: 0.3; }
+
+    .loader:before {
+      content: "";
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #000;
+      top: calc(50% - 4px);
+      left: -8px;
+      animation: inherit;
+      animation-name: l7-1;
     }
+
+    @keyframes l7-0 {
+     16.67% {background-size:8px 30%, 8px 30%, 8px 50%, 8px 50%, 8px 50%, 8px 50%}
+     33.33% {background-size:8px 30%, 8px 30%, 8px 30%, 8px 30%, 8px 50%, 8px 50%}
+     50%    {background-size:8px 30%, 8px 30%, 8px 30%, 8px 30%, 8px 30%, 8px 30%}
+     66.67% {background-size:8px 50%, 8px 50%, 8px 30%, 8px 30%, 8px 30%, 8px 30%}
+     83.33% {background-size:8px 50%, 8px 50%, 8px 50%, 8px 50%, 8px 30%, 8px 30%}
+    }
+
+    @keyframes l7-1 {
+     20%  {left:0px}
+     40%  {left:calc(50%  - 4px)}
+     60%  {left:calc(100% - 8px)}
+     80%,
+     100% {left:100%}
+    }
+
+    /* Style for the text */
+    #loading-text {
+      font-size: 18px;
+      color: #3B82F6;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
     h2, h3 {
         color: #ffffff;
     }
@@ -611,7 +673,6 @@ with gr.Blocks(css="""
     #action-output-container {
         width: 100%;
         max-width: 1000px;
-        margin: 20px auto;
     }
     #details_html {
         padding: 20px;
@@ -633,41 +694,51 @@ with gr.Blocks(css="""
     .gr-button {
         margin-right: 10px;
     }
-    .citation-box pre {
-        white-space: pre-wrap;   /* Wrap lines instead of scrolling horizontally */
-        word-wrap: break-word;   /* Break long words if necessary */
-        overflow-x: auto;        /* Allow scroll only if needed */
-        font-family: 'Courier New', monospace;
+               
+   .citation-box pre {
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        overflow-x: auto;
+        font-family: 'Consolas', monospace; /* A more modern monospace font */
         font-size: 14px;
-        color: #e2e8f0;
+        color: #d4dae0; /* A lighter, more modern gray */
+        background-color: #1e293b; /* Darker background to blend better */
+        padding: 12px; /* Add some padding inside the pre tag */
+        border-radius: 6px; /* Slightly rounded corners for the text block */
+        border: 1px solid #334155; /* Subtle border */
     }
+
     .citation-box {
-        border: 2px solid #333;
-        padding: 16px;
         margin-bottom: 20px;
-        background-color: #1a1a1a;
+        background-color: #1e293b; /* Match pre background or slightly lighter */
         border-radius: 8px;
+        border: 1px solid #334155; /* Consistent border */
+        padding: 16px;
     }
+
     .citation-divider {
-        border-bottom: 1px solid #444;
+        border-bottom: 1px solid #334155; /* Consistent divider color */
         margin: 12px 0;
     }
+
     .citation-block {
-        margin-bottom: 8px;
+        margin-bottom: 10px; /* Slightly increased margin */
     }
+
     .single-citation {
-        margin-bottom: 8px;
-        line-height: 1.4;
+        line-height: 1.5; /* Improved readability */
+        color: #cbd5e1; /* Lighter text color */
     }
+
     .citation-content {
         padding-left: 16px;
-        color: #ccc;
+        color: #94a3b8; /* Slightly darker secondary text color */
     }
+               
     #tab-bar .gr-radio {
         display: flex;
         justify-content: center;
         gap: 12px;
-        margin-top: 20px;
     }
     #tab-bar .gr-radio label {
         background-color: #1e293b;
@@ -792,7 +863,7 @@ with gr.Blocks(css="""
     with gr.Row(elem_id="centered-form"):
         # Left Column: Search and action buttons.
         with gr.Column(scale=1, elem_id="input-section"):
-            gr.Markdown("### <span style='color:#3B82F6;'>DelveDeep</span> - AI Powered Research Assistant", elem_id="subtitle-text")
+            gr.Markdown("### <span style='color:#3B82F6;'>Hey fellow researcher!</span> - Your AI powered research assistant is here to help!", elem_id="subtitle-text")
             query_input = gr.Textbox(label="How can I help with your research today?", placeholder="Try writing something like 'Find research papers on Quantum Computing'", lines=1, elem_id="query-box")
             upload_file = gr.File(label="Upload Document - .pdf, .docx, .txt (optional)", elem_id="upload-box")
             search_button = gr.Button("Search", elem_id="search-btn")
@@ -802,7 +873,7 @@ with gr.Blocks(css="""
             loading_html = gr.HTML(visible=False)
             results_md = gr.Markdown(visible=False, elem_id="results-box")
 
-            selection = gr.CheckboxGroup(label="Select Papers", choices=[], visible=False, elem_id="paper-checkboxes")
+            selection = gr.CheckboxGroup(label="Select papers from above that you want to work with", choices=[], visible=False, elem_id="paper-checkboxes")
             
             with gr.Row(elem_id="action-btn-row"):
                 btn_citations = gr.Button("Get Citations", elem_classes="action-btn")
@@ -822,15 +893,14 @@ with gr.Blocks(css="""
         tab_output = gr.HTML(visible=True)
 
     with gr.Row():
-        gr.HTML('<div class="tab-container-row">')
-        tab_selector = gr.Radio(
-            choices=["Summary", "Citations", "BibTeX", "Compare"],
-            value="Summary",
-            interactive=True,
-            elem_id="tab-bar",
-            label=""
-        )
-        gr.HTML('</div>')
+        with gr.Column(elem_id="tab-bar-container", scale=1, min_width=0, elem_classes="tab-row-container"):       
+            tab_selector = gr.Radio(
+                choices=["Summary", "Citations", "BibTeX", "Compare"],
+                value="Summary",
+                interactive=True,
+                elem_id="tab-bar",
+                label=""
+            )
 
     tab_output = gr.HTML(visible=True, elem_id="tab-output")
 
