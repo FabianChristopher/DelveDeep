@@ -28,7 +28,7 @@
     python gradio_frontend.py
     ```
       
-- Visit http://127.0.0.1:5500/ in your browser or start up your Live Server to demo the Application.
+- Start up your Live Server to demo the Application.
 
 ## Making Contributions
 - Contributions are welcome, but before you do, please follow these steps.
