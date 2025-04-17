@@ -1,5 +1,28 @@
 # Documentation
 
+## Presentation
+<p align="left">
+  <a href="https://docs.google.com/presentation/d/1XAVLdmoZwuCC4ot5t-BM7qtA7b58TUdIf6kfdcoh20o/edit?usp=sharing" target="_blank">
+    <img src="https://img.shields.io/badge/Open%20Slides-blue?style=for-the-badge" alt="Slides">
+  </a>
+</p>
+
+## Video
+<p align="left">
+  <a href="https://drive.google.com/file/d/1AKJwu7iaXruduoMPH0bK47lWcvgU9AUs/view?usp=sharing" target="_blank">
+    <img src="https://img.shields.io/badge/Open%20Video-olive?style=for-the-badge" alt="Video">
+  </a>
+</p>
+
+## Github
+Please clone the main branch since it contains the latest stable version.
+
+<p align="left">
+  <a href="https://github.com/FabianChristopher/DelveDeep.git" target="_blank">
+    <img src="https://img.shields.io/badge/Open%20Code-orange?style=for-the-badge" alt="Code">
+  </a>
+</p>
+
 ## Requirements
 - Open terminal 
 - Activate your venv (optional but recommended)
