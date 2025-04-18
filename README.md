@@ -70,4 +70,4 @@ Please clone the main branch since it contains the latest stable version.
 - Now you can push your changes to Github!
 - Make sure to push changes to your named branch and not to main.
 
-### 💖 Developed with love by Team ScholarWiz
+### 💖 Developed with love by Team ScholarWiz (Fabian Christopher, Shashwat Singh, Madhumita Kolukuluri)
